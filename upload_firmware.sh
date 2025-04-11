@@ -20,14 +20,15 @@ else
     exit 1
 fi
 
-if [[ ! -d /sys/class/gpio/gpio10/ ]]
-then
+if command -v pinctrl 2>&1 >/dev/null; then
+  pinctrl set 10 op dh
+elif [[ -e /sys/class/gpio/gpio10 ]]; then
   echo "10" > /sys/class/gpio/export
+  echo "out" > /sys/class/gpio/gpio10/direction
+  echo "1" > /sys/class/gpio/gpio10/value
+else
+  echo ""
+  echo "WARNING: could not find a method to set RPI power gpio"
+  echo ""
 fi
-echo "out" > /sys/class/gpio/gpio10/direction
-echo "1" > /sys/class/gpio/gpio10/value
 openocd -f interface/raspberrypi-swd.cfg -f target/rp2040.cfg -c "program $1 verify reset exit"
-if [[ -d /sys/class/gpio/gpio10/ ]]
-then
-  echo "10" > /sys/class/gpio/unexport
-fi
