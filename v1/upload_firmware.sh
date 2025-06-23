@@ -7,18 +7,10 @@
 # Force script to exit if an error occurs
 set -e
 
-if [[ -f /etc/openmoweros_version ]]
-then
-    echo ""
-    echo " [✓] OpenMowerOS detected"
-    echo ""
-else
-    echo ""
-    echo "ERROR: OpenMowerOS not detected!"
-    echo "This script is only supported on OpenMowerOS"
-    echo ""
-    exit 1
-fi
+# Source core functions
+source $HOME/openmoweros-tools/.core.sh
+
+check_openmoweros
 
 if command -v pinctrl 2>&1 >/dev/null; then
   pinctrl set 10 op dh
